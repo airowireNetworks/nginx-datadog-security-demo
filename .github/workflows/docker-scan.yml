@@ -41,6 +41,10 @@ jobs:
         run: |
           datadog-security-cli version
 
+      - name: Verify Authentication
+        run: |
+          echo "DD_SITE=$DD_SITE"
+
       - name: Scan Docker Image
         run: |
-          datadog-security-cli image nginx-datadog-demo:latest
+          datadog-security-cli image nginx-datadog-demo:latest --debug
