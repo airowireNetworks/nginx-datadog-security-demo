@@ -56,4 +56,10 @@ jobs:
 
       - name: Scan Docker Image
         run: |
-          datadog-security-cli image nginx-datadog-demo:latest
+          datadog-security-cli image nginx-datadog-demo:latest \
+            --tag repo:${{ github.repository }} \
+            --tag workflow:${{ github.workflow }} \
+            --tag run_id:${{ github.run_id }} \
+            --tag run_number:${{ github.run_number }} \
+            --tag branch:${{ github.ref_name }} \
+            --tag commit:${{ github.sha }}
