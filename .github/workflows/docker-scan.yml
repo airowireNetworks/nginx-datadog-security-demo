@@ -1,0 +1,47 @@
+name: Datadog Security Scan Demo
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  docker-security-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Verify Environment
+        run: |
+          echo "GitHub Actions Runner"
+          uname -a
+          docker --version
+
+      - name: Build Docker Image
+        run: |
+          docker build -t nginx-datadog-demo:latest .
+
+      - name: Verify Docker Image
+        run: |
+          docker images
+
+      - name: Install Datadog Security CLI
+        run: |
+          DD_API_KEY=${{ secrets.DD_API_KEY }} \
+          DD_SITE=${{ secrets.DD_SITE }} \
+          bash -c "$(curl -L https://install.datadoghq.com/scripts/install-security-cli.sh)"
+
+      - name: Verify Datadog Security CLI
+        run: |
+          datadog-security version
+
+      - name: Scan Docker Image
+        env:
+          DD_API_KEY: ${{ secrets.DD_API_KEY }}
+          DD_APP_KEY: ${{ secrets.DD_APP_KEY }}
+          DD_SITE: ${{ secrets.DD_SITE }}
+        run: |
+          datadog-security container scan nginx-datadog-demo:latest
