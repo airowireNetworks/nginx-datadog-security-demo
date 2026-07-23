@@ -49,12 +49,17 @@ jobs:
       - name: Show CLI Help
         run: datadog-security-cli image --help
 
+      - name: Debug Datadog Environment
+        run: |
+          echo "DD_SITE=[$DD_SITE]"
+          echo "DD_API_KEY length: ${#DD_API_KEY}"
+          echo "DD_APP_KEY length: ${#DD_APP_KEY}"
+          echo "DD_SITE length: ${#DD_SITE}"
+          printf "DD_SITE bytes: "
+          printf "%s" "$DD_SITE" | od -An -tx1
+
       - name: Scan Docker Image
         run: |
           datadog-security-cli image nginx-datadog-demo:latest \
-            --tag "repo:${{ github.repository }}" \
-            --tag "branch:${{ github.ref_name }}" \
-            --tag "run_id:${{ github.run_id }}" \
-            --tag "run_number:${{ github.run_number }}" \
-            --tag "commit:${{ github.sha }}" \
+            --tag repo:github-actions \
             -o json
